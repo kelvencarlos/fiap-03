@@ -3,77 +3,140 @@ historicoEnergiaGerada = [
     ["energia_eolica", [20, 25, 30]],
 ]
 historicoEntradas = [["energia_solar", [9, 11, 13]], ["energia_eolica", [8, 10, 12]]]
-entradaEnergiaSolar = float(input("Insira a quantidade de luz: "))
-entradaEnergiaEolica = float(input("Insira a quantidade de vento: "))
-consumoEnergia = float(input("Insira o consumo de energia: "))
-energiaAtualColonia = float(input("Insira a energia atual: "))
 
 
-def calcularCoeficienteAngular(historicoEnergiaGerada, historicoEntradas):
-    coeficienteAngular = (historicoEnergiaGerada[2] - historicoEnergiaGerada[1]) / (
-        historicoEntradas[2] - historicoEntradas[1]
+def calcularCoeficienteAngular(historicoEnergiasGerada, historicoEntradas):
+    quantidadeObservacoes = len(historicoEnergiasGerada)
+    somaEntradas = historicoEntradas[0] + historicoEntradas[1] + historicoEntradas[2]
+    somaGeracoes = (
+        historicoEnergiasGerada[0]
+        + historicoEnergiasGerada[1]
+        + historicoEnergiasGerada[2]
+    )
+    somaMultiplicacoesEntradasGeracoes = (
+        historicoEntradas[0] * historicoEnergiasGerada[0]
+        + historicoEntradas[1] * historicoEnergiasGerada[1]
+        + historicoEntradas[2] * historicoEnergiasGerada[2]
+    )
+    somaQuadradosEntradas = (
+        historicoEntradas[0] * historicoEntradas[0]
+        + historicoEntradas[1] * historicoEntradas[1]
+        + historicoEntradas[2] * historicoEntradas[2]
+    )
+    coeficienteAngular = (
+        (quantidadeObservacoes * somaMultiplicacoesEntradasGeracoes)
+        - (somaEntradas * somaGeracoes)
+    ) / (
+        (quantidadeObservacoes * somaQuadradosEntradas) - (somaEntradas * somaEntradas)
     )
 
     return coeficienteAngular
 
 
-def calcularIntercepto(ultimaEnergiaGeradaIndividualmente, coeficienteAngular, entrada):
-    intercepto = ultimaEnergiaGeradaIndividualmente - (coeficienteAngular * entrada)
+def calcularIntercepto(coeficienteAngular, historicoEnergiasGeradas, historicoEntradas):
+    somaEnergiasGeradas = (
+        historicoEnergiasGeradas[0]
+        + historicoEnergiasGeradas[1]
+        + historicoEnergiasGeradas[2]
+    )
+    somaEntradas = historicoEntradas[0] + historicoEntradas[1] + historicoEntradas[2]
+    quantidadeObservacoes = len(historicoEnergiasGeradas)
+    intercepto = (
+        somaEnergiasGeradas - (coeficienteAngular * somaEntradas)
+    ) / quantidadeObservacoes
 
     return intercepto
 
 
-def preverEnergiaGerada(entradaEnergiaSolar, entradaEnergiaEolica):
-    coeficienteAngularEnergiaSolar = calcularCoeficienteAngular(
-        historicoEnergiaGerada[0][1], historicoEntradas[0][1]
+def preverEnergiaGerada(entradaEnergia, historicoEnergiaGerada, historicoEntradas):
+    coeficienteAngularEnergia = calcularCoeficienteAngular(
+        historicoEnergiaGerada[1], historicoEntradas[1]
     )
 
-    interceptoEnergiaSolar = calcularIntercepto(
-        historicoEnergiaGerada[0][1][2],
-        coeficienteAngularEnergiaSolar,
-        historicoEntradas[0][1][2],
+    intercepto = calcularIntercepto(
+        coeficienteAngularEnergia,
+        historicoEnergiaGerada[1],
+        historicoEntradas[1],
     )
 
-    energiaSolarGerada = (
-        coeficienteAngularEnergiaSolar * entradaEnergiaSolar + interceptoEnergiaSolar
-    )
+    energiaGerada = coeficienteAngularEnergia * entradaEnergia + intercepto
 
-    coeficienteAngularEnergiaEolica = calcularCoeficienteAngular(
-        historicoEnergiaGerada[1][1], historicoEntradas[1][1]
-    )
+    if historicoEnergiaGerada[0] == "energia_solar":
+        print(
+            "Coeficiente angular: {}\nEntrada de energia: {}\nIntercepto: {}\nEquação da reta: y = {} x {} + {}\nEnergia gerada: {} (Solar)\n".format(
+                coeficienteAngularEnergia,
+                entradaEnergia,
+                intercepto,
+                coeficienteAngularEnergia,
+                entradaEnergia,
+                intercepto,
+                energiaGerada,
+            )
+        )
+    else:
+        print(
+            "Coeficiente angular: {}\nEntrada de energia: {}\nIntercepto: {}\nEquação da reta: y = {} x {} + {}\nEnergia gerada: {} (Eólica)\n".format(
+                coeficienteAngularEnergia,
+                entradaEnergia,
+                intercepto,
+                coeficienteAngularEnergia,
+                entradaEnergia,
+                intercepto,
+                energiaGerada,
+            )
+        )
 
-    interceptoEnergiaEolica = calcularIntercepto(
-        historicoEnergiaGerada[1][1][2],
-        coeficienteAngularEnergiaEolica,
-        historicoEntradas[1][1][2],
-    )
-
-    energiaEolicaGerada = (
-        coeficienteAngularEnergiaEolica * entradaEnergiaEolica + interceptoEnergiaEolica
-    )
-
-    return energiaSolarGerada + energiaEolicaGerada
+    return energiaGerada
 
 
-def monitorarEnergiaColonia(consumoEnergia, entradaEnergiaSolar, entradaEnergiaEolica):
+def monitorarEnergiaIndividualmente(
+    entradaEnergia, historicoEnergiaGerada, historicoEntradas
+):
     previsaoEnergiaGerada = preverEnergiaGerada(
-        entradaEnergiaSolar, entradaEnergiaEolica
+        entradaEnergia, historicoEnergiaGerada, historicoEntradas
     )
-    saldoEnergia = energiaAtualColonia - consumoEnergia
+
+    return previsaoEnergiaGerada
+
+
+entradaEnergiaSolar = float(input("Insira a quantidade de luz: "))
+
+energiaSolarGerada = monitorarEnergiaIndividualmente(
+    entradaEnergiaSolar, historicoEnergiaGerada[0], historicoEntradas[0]
+)
+
+entradaEnergiaEolica = float(input("Insira a quantidade de vento: "))
+
+energiaEolicaGerada = monitorarEnergiaIndividualmente(
+    entradaEnergiaEolica, historicoEnergiaGerada[1], historicoEntradas[1]
+)
+
+energiaAtualColonia = float(input("Insira a reserva de energia atual da colônia: "))
+
+consumoEnergia = float(input("Insira o consumo de energia atual da colônia: "))
+
+
+def calcularSaldoEnergiaColonia(
+    energiaAtualColonia, energiaSolarGerada, energiaEolicaGerada, consumoEnergia
+):
+    energiaPrevista = energiaSolarGerada + energiaEolicaGerada
+
+    saldoEnergiaFinal = energiaAtualColonia - consumoEnergia + energiaPrevista
+
     print(
-        "Previsão de geração de energia: {}\nSaldo atual de energia: {}".format(
-            previsaoEnergiaGerada, saldoEnergia
+        "\nEnergia gerada: {}\nConsumo atual da colônia: {}\nReserva de energia atual da colônia {}\nSaldo final de energia da colônia: {}\n".format(
+            energiaPrevista, consumoEnergia, energiaAtualColonia, saldoEnergiaFinal
         )
     )
 
-    if energiaAtualColonia < consumoEnergia:
+    if saldoEnergiaFinal < consumoEnergia:
         print("Ação: Manter suporte à vida ligado e desligar sistemas não essenciais")
-    elif (
-        energiaAtualColonia > consumoEnergia and consumoEnergia > previsaoEnergiaGerada
-    ):
+    elif saldoEnergiaFinal > consumoEnergia and consumoEnergia > energiaPrevista:
         print("Ação: Reduzir consumo de energia")
     else:
-        print("Ação: Armazenar energia excedente")
+        print("**Ação: Armazenar energia excedente**")
 
 
-monitorarEnergiaColonia(consumoEnergia, entradaEnergiaSolar, entradaEnergiaEolica)
+calcularSaldoEnergiaColonia(
+    energiaAtualColonia, energiaSolarGerada, energiaEolicaGerada, consumoEnergia
+)
