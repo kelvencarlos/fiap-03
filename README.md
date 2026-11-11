@@ -74,10 +74,10 @@ cd fiap-03
 Execute o arquivo principal:
 
 ```bash
-python script.py.py
+python script.py
 ```
 
-Substitua `script.py.py` pelo nome do arquivo Python que contém a implementação.
+Substitua `script.py` pelo nome do arquivo Python que contém a implementação.
 
 Não são necessárias bibliotecas externas.
 
