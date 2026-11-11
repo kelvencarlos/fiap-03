@@ -1,6 +1,4 @@
-# Sistema de Monitoramento Energético da Colônia
-
-Projeto desenvolvido para a atividade em grupo da FIAP — Capítulo 1: *A Aurora Estabelece os Primeiros Sistemas da Colônia*.
+# Atividade em grupo | Cap 1 - A Aurora Estabelece os Primeiros Sistemas da Colônia
 
 A aplicação simula o monitoramento energético de uma colônia por meio de estimativas de geração solar e eólica. A partir de dados históricos, o sistema calcula a geração prevista de cada fonte, projeta o saldo energético e apresenta recomendações para auxiliar na tomada de decisões.
 
